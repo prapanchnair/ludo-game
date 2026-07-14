@@ -50,6 +50,16 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('play_again', () => {
+    if (!socket.data.playerId) return;
+    try {
+      game.playAgain(socket.data.playerId);
+      broadcastState();
+    } catch (err) {
+      socket.emit('error_msg', err.message);
+    }
+  });
+
   socket.on('roll_dice', () => {
     if (!socket.data.playerId) return;
     try {
@@ -80,6 +90,15 @@ io.on('connection', (socket) => {
     } catch (err) {
       socket.emit('error_msg', err.message);
     }
+  });
+
+  socket.on('reset_room', ({ password } = {}) => {
+    if (!socket.data.playerId && password !== PASSWORD) {
+      socket.emit('error_msg', 'Incorrect password.');
+      return;
+    }
+    game.resetRoom();
+    broadcastState();
   });
 
   socket.on('disconnect', () => {

@@ -22,6 +22,7 @@ class LudoGame {
     this.consecutiveSixes = 0;
     this.winners = []; // colors in finishing order
     this.log = [];
+    this.gamesPlayed = 0; // used to rotate who starts each new game
   }
 
   addLog(msg) {
@@ -65,6 +66,11 @@ class LudoGame {
     }
   }
 
+  resetRoom() {
+    this.reset();
+    this.addLog('Room was reset. Waiting for players to join.');
+  }
+
   startGame(playerId) {
     if (this.phase !== 'lobby') throw new Error('Game already started.');
     if (this.players.length < 2) throw new Error('Need at least 2 players to start.');
@@ -74,7 +80,25 @@ class LudoGame {
     this.hasRolled = false;
     this.movable = [];
     this.consecutiveSixes = 0;
+    this.gamesPlayed++;
     this.addLog('Game started. ' + this.currentPlayer().name + ' goes first.');
+  }
+
+  playAgain(playerId) {
+    if (this.phase !== 'finished') throw new Error('Game is not over yet.');
+    if (this.players.length < 2) throw new Error('Need at least 2 players to start.');
+    BOARD.COLORS.forEach((c) => {
+      this.tokens[c] = [0, 0, 0, 0];
+    });
+    this.winners = [];
+    this.dice = null;
+    this.hasRolled = false;
+    this.movable = [];
+    this.consecutiveSixes = 0;
+    this.turnIndex = this.gamesPlayed % this.players.length;
+    this.gamesPlayed++;
+    this.phase = 'playing';
+    this.addLog('New game started. ' + this.currentPlayer().name + ' goes first.');
   }
 
   currentPlayer() {
