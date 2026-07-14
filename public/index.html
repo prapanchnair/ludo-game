@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ludo</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <section id="login-screen" class="screen">
+    <div class="card">
+      <h1>Ludo</h1>
+      <form id="login-form">
+        <label>Your name
+          <input type="text" id="name-input" maxlength="20" required autocomplete="off" />
+        </label>
+        <label>Room password
+          <input type="password" id="password-input" required autocomplete="off" />
+        </label>
+        <button type="submit">Join</button>
+      </form>
+      <p class="error" id="login-error"></p>
+    </div>
+  </section>
+
+  <section id="lobby-screen" class="screen hidden">
+    <div class="card">
+      <h1>Lobby</h1>
+      <ul id="player-list"></ul>
+      <button id="start-btn">Start Game</button>
+      <p class="hint">Need at least 2 players. Anyone can start once ready.</p>
+    </div>
+  </section>
+
+  <section id="game-screen" class="screen hidden">
+    <div class="game-layout">
+      <div class="board-wrap">
+        <svg id="board-svg" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="sidebar">
+        <div id="turn-banner" class="turn-banner"></div>
+        <p id="toast" class="error"></p>
+        <div class="dice-area">
+          <div id="dice" class="dice">?</div>
+        </div>
+        <ul id="players-sidebar"></ul>
+        <div id="winner-banner" class="hidden"></div>
+        <h3>Log</h3>
+        <ul id="log-list" class="log-list"></ul>
+      </div>
+    </div>
+  </section>
+
+  <script src="/js/board.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/client.js"></script>
+</body>
+</html>

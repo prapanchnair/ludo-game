@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: ludo-game
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: LUDO_PASSWORD
+        sync: false

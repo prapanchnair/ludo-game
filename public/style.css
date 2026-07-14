@@ -1,0 +1,163 @@
+:root {
+  --red: #e74c3c;
+  --green: #2ecc71;
+  --yellow: #f1c40f;
+  --blue: #3498db;
+  --bg: #1b1f27;
+  --panel: #262b36;
+  --text: #eef1f6;
+  --muted: #97a0b3;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.screen { width: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.screen.hidden { display: none; }
+
+.card {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 32px;
+  width: 360px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+.card h1 { margin-top: 0; }
+
+#login-form { display: flex; flex-direction: column; gap: 16px; }
+#login-form label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--muted); }
+#login-form input {
+  background: #1b1f27;
+  border: 1px solid #3a4152;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 15px;
+}
+
+button {
+  background: #4f7cff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 15px;
+  cursor: pointer;
+}
+button:hover { background: #3f68e0; }
+button:disabled { background: #444b5c; cursor: not-allowed; }
+
+.error { color: var(--red); min-height: 20px; font-size: 14px; }
+.hint { color: var(--muted); font-size: 13px; }
+
+#player-list, #players-sidebar { list-style: none; padding: 0; margin: 16px 0; }
+#player-list li, #players-sidebar li {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 0; font-size: 15px;
+}
+.dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.dot.red { background: var(--red); }
+.dot.green { background: var(--green); }
+.dot.yellow { background: var(--yellow); }
+.dot.blue { background: var(--blue); }
+.disconnected { opacity: 0.4; font-style: italic; }
+.current-turn { font-weight: bold; text-decoration: underline; }
+
+.game-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.board-wrap { width: min(90vw, 600px); }
+#board-svg { width: 100%; height: auto; background: #f4f0e8; border-radius: 8px; }
+
+.sidebar {
+  width: 280px;
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.turn-banner { font-size: 18px; margin-bottom: 12px; min-height: 24px; }
+.dice-area { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.dice {
+  width: 56px; height: 56px;
+  background: #555; color: white;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: bold;
+  user-select: none;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.dice.dice-red { background: var(--red); }
+.dice.dice-green { background: var(--green); }
+.dice.dice-blue { background: var(--blue); }
+.dice.dice-yellow { background: var(--yellow); color: #3a2f00; }
+.dice.dice-active {
+  cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.85), 0 0 18px 4px rgba(255,255,255,0.55);
+}
+.dice.dice-active:hover { transform: scale(1.06); }
+.dice.dice-active:active { transform: scale(0.96); }
+
+#winner-banner {
+  background: #2ecc71;
+  color: #06210f;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.log-list {
+  list-style: none; padding: 0; margin: 0;
+  max-height: 220px; overflow-y: auto;
+  font-size: 13px; color: var(--muted);
+  display: flex; flex-direction: column-reverse;
+  gap: 4px;
+}
+
+.cell-path { fill: #ffffff; stroke: #ccc; stroke-width: 0.02; }
+.cell-safe { fill: #ded9c9; }
+.cell-home-red { fill: #f7c9c4; }
+.cell-home-green { fill: #c9f0d3; }
+.cell-home-yellow { fill: #faedb0; }
+.cell-home-blue { fill: #c3ddf5; }
+.base-red { fill: var(--red); }
+.base-green { fill: var(--green); }
+.base-yellow { fill: var(--yellow); }
+.base-blue { fill: var(--blue); }
+.base-inner { fill: #f4f0e8; }
+.center-cell { fill: #ddd; stroke: #999; stroke-width: 0.02; }
+
+.token {
+  stroke: #222;
+  stroke-width: 0.06;
+  cursor: default;
+}
+.token.movable {
+  cursor: pointer;
+  stroke: #111;
+  stroke-width: 0.1;
+  filter: drop-shadow(0 0 0.15px #000);
+}
+.token.movable:hover { opacity: 0.85; }
+
+@media (max-width: 700px) {
+  .sidebar { width: 100%; max-width: 600px; }
+}
