@@ -22,6 +22,7 @@ class LudoGame {
     this.consecutiveSixes = 0;
     this.winners = []; // colors in finishing order
     this.log = [];
+    this.chat = []; // { name, color, text }
     this.gamesPlayed = 0; // used to rotate who starts each new game
   }
 
@@ -80,6 +81,7 @@ class LudoGame {
     this.hasRolled = false;
     this.movable = [];
     this.consecutiveSixes = 0;
+    this.chat = [];
     this.gamesPlayed++;
     this.addLog('Game started. ' + this.currentPlayer().name + ' goes first.');
   }
@@ -95,10 +97,20 @@ class LudoGame {
     this.hasRolled = false;
     this.movable = [];
     this.consecutiveSixes = 0;
+    this.chat = [];
     this.turnIndex = this.gamesPlayed % this.players.length;
     this.gamesPlayed++;
     this.phase = 'playing';
     this.addLog('New game started. ' + this.currentPlayer().name + ' goes first.');
+  }
+
+  addChatMessage(playerId, text) {
+    const player = this.findPlayer(playerId);
+    if (!player) throw new Error('Join the game before chatting.');
+    const trimmed = (text || '').trim().slice(0, 300);
+    if (!trimmed) return;
+    this.chat.push({ name: player.name, color: player.color, text: trimmed });
+    if (this.chat.length > 100) this.chat.shift();
   }
 
   currentPlayer() {
@@ -284,7 +296,8 @@ class LudoGame {
       hasRolled: this.hasRolled,
       movable: this.movable,
       winners: this.winners,
-      log: this.log.slice(-15)
+      log: this.log.slice(-15),
+      chat: this.chat.slice(-50)
     };
   }
 }

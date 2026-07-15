@@ -28,6 +28,9 @@
   const loginResetBtn = document.getElementById('login-reset-btn');
   const lobbyResetBtn = document.getElementById('lobby-reset-btn');
   const gameResetBtn = document.getElementById('game-reset-btn');
+  const chatList = document.getElementById('chat-list');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
 
   const NS = 'http://www.w3.org/2000/svg';
   let myPlayerId = localStorage.getItem('ludoPlayerId') || null;
@@ -38,6 +41,55 @@
   let rollCycleInterval = null;
   let hasJoined = false;
   const ROLL_ANIM_MS = 250;
+
+  const SOUNDS = {
+    throw: new Audio('/sounds/throw.wav'),
+    sentBackHome: new Audio('/sounds/sent_back_home.wav'),
+    safeCell: new Audio('/sounds/safe_cell.wav'),
+    eachCoinReachesEnd: new Audio('/sounds/each_coin_reaches_end.wav'),
+    endOfGame: new Audio('/sounds/end_of_game.wav')
+  };
+
+  function playSound(key) {
+    const audio = SOUNDS[key];
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(() => {}); // ignore autoplay-policy rejections
+  }
+
+  // Compares two consecutive state snapshots and plays sounds for whatever
+  // changed, so every connected client hears the same events at the same time.
+  function playSoundEffects(prev, state) {
+    if (!prev) return;
+
+    if (state.hasRolled && state.dice != null && (!prev.hasRolled || prev.dice !== state.dice)) {
+      playSound('throw');
+    }
+
+    if (prev.phase === 'playing') {
+      BOARD.COLORS.forEach((color) => {
+        state.tokens[color].forEach((steps, i) => {
+          const prevSteps = prev.tokens[color][i];
+          if (prevSteps === steps) return;
+          if (prevSteps > 0 && prevSteps < BOARD.TOTAL_STEPS && steps === 0) {
+            playSound('sentBackHome');
+          }
+          if (prevSteps < BOARD.TOTAL_STEPS && steps >= BOARD.TOTAL_STEPS) {
+            playSound('eachCoinReachesEnd');
+          } else {
+            const info = BOARD.cellForToken(color, steps);
+            if (info.type === 'path' && BOARD.isSafePathIndex(info.pathIndex)) {
+              playSound('safeCell');
+            }
+          }
+        });
+      });
+    }
+
+    if (prev.phase !== 'finished' && state.phase === 'finished') {
+      playSound('endOfGame');
+    }
+  }
 
   const socket = io();
 
@@ -63,6 +115,7 @@
 
   socket.on('state', (state) => {
     if (!hasJoined) return; // ignore ambient broadcasts until we've actually joined
+    const prev = latestState;
     latestState = state;
     const me = state.players.find((p) => p.isYou);
     if (!me) {
@@ -73,6 +126,7 @@
       return;
     }
     myColor = me.color;
+    playSoundEffects(prev, state);
     render(state);
   });
 
@@ -84,6 +138,14 @@
       name: nameInput.value,
       playerId: myPlayerId
     });
+  });
+
+  chatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if (!text) return;
+    socket.emit('chat_message', { text });
+    chatInput.value = '';
   });
 
   startBtn.addEventListener('click', () => socket.emit('start_game'));
@@ -197,6 +259,18 @@
       li.textContent = entry;
       logList.appendChild(li);
     });
+
+    chatList.innerHTML = '';
+    state.chat.forEach((msg) => {
+      const li = document.createElement('li');
+      const nameSpan = document.createElement('span');
+      nameSpan.className = `chat-name ${msg.color}-text`;
+      nameSpan.textContent = msg.name + ': ';
+      li.appendChild(nameSpan);
+      li.appendChild(document.createTextNode(msg.text));
+      chatList.appendChild(li);
+    });
+    chatList.scrollTop = chatList.scrollHeight;
 
     drawTokens(state, isMyTurn && !isRolling);
   }

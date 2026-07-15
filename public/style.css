@@ -98,6 +98,8 @@ button:disabled { background: #444b5c; cursor: not-allowed; }
 
 .sidebar {
   width: 280px;
+  max-height: min(600px, calc(100vh - 48px));
+  overflow-y: auto;
   background: var(--panel);
   border-radius: 12px;
   padding: 20px;
@@ -160,6 +162,34 @@ button:disabled { background: #444b5c; cursor: not-allowed; }
   display: flex; flex-direction: column-reverse;
   gap: 4px;
 }
+
+.chat-list {
+  height: 140px;
+  flex-shrink: 0;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  word-break: break-word;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.chat-list .chat-name { font-weight: bold; }
+.chat-name.red-text { color: var(--red); }
+.chat-name.green-text { color: var(--green); }
+.chat-name.yellow-text { color: var(--yellow); }
+.chat-name.blue-text { color: var(--blue); }
+.chat-form { display: flex; gap: 8px; margin-bottom: 16px; }
+.chat-form input {
+  flex: 1;
+  background: #1b1f27;
+  border: 1px solid #3a4152;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 14px;
+  min-width: 0;
+}
+.chat-form button { padding: 8px 14px; }
 
 .cell-path { fill: #ffffff; stroke: #ccc; stroke-width: 0.02; }
 .cell-blocked-line { stroke: #b8b0a0; stroke-width: 0.05; stroke-linecap: round; }
